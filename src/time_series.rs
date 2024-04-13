@@ -7,10 +7,8 @@ use burn::{
         gru::{Gru, GruConfig},
         Dropout, DropoutConfig, LayerNorm, LayerNormConfig, Linear, LinearConfig,
     },
-    tensor::{backend::Backend, Tensor},
+    tensor::{backend::Backend, Tensor}
 };
-
-use crate::Model;
 
 use super::{Activation, ThreeTuple};
 
@@ -89,12 +87,8 @@ impl<B: Backend> Debug for GruNetwork<B> {
     }
 }
 
-impl<B: Backend> Model<B> for GruNetwork<B> {
-    type Input = Tensor<B, 3>;
-    type Output = Tensor<B, 2>;
-    type Config = GruNetworkConfig;
-
-    fn forward(&self, input: Self::Input) -> Self::Output {
+impl<B: Backend> GruNetwork<B> {
+    pub fn forward(&self, input: Tensor<B, 3>) -> Tensor<B, 2> {
         let mut x = input;
         for layer in &self.grus {
             x = layer.0.forward(x, None);
@@ -120,19 +114,27 @@ impl<B: Backend> Model<B> for GruNetwork<B> {
         x
     }
 
-    fn from_config(config: Self::Config, device: &B::Device) -> Self {
+    pub fn from_config(config: &GruNetworkConfig, device: &B::Device) -> Self {
         Self {
             grus: config
                 .grus
-                .into_iter()
-                .map(|(a, b, c)| ThreeTuple(a.init(device), b.map(|x| x.init(device)), c))
+                .iter()
+                .map(|(a, b, c)| ThreeTuple(a.init(device), b.as_ref().map(|x| x.init(device)), *c))
                 .collect(),
             linears: config
                 .linears
-                .into_iter()
-                .map(|(a, b, c)| ThreeTuple(a.init(device), b.map(|x| x.init(device)), c))
+                .iter()
+                .map(|(a, b, c)| ThreeTuple(a.init(device), b.as_ref().map(|x| x.init(device)), *c))
                 .collect(),
             dropout: config.dropout.init(),
         }
+    }
+}
+
+
+impl GruNetworkConfig {
+    /// Returns the initialized model.
+    pub fn init<B: Backend>(&self, device: &B::Device) -> GruNetwork<B> {
+        GruNetwork::from_config(self, device)
     }
 }

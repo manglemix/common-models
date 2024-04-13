@@ -1,10 +1,9 @@
 use std::{
-    fmt::{Debug, Display},
+    fmt::Debug,
     marker::PhantomData,
 };
 
 use burn::{
-    config::Config,
     module::{AutodiffModule, Module},
     record::Record,
     tensor::{
@@ -310,57 +309,3 @@ impl<T> Default for PhantomModule<T> {
         Self(PhantomData)
     }
 }
-
-pub trait Model<B: Backend>: Module<B> + Display + Debug + 'static {
-    type Input;
-    type Output;
-    type Config: Config;
-
-    fn from_config(config: Self::Config, device: &B::Device) -> Self;
-    fn forward(&self, input: Self::Input) -> Self::Output;
-}
-
-// fn find_nth_factor(num: usize, mut n: usize) -> Option<usize> {
-//     let sqrt_num = (num as f64).sqrt() as usize;
-//     let mut end_factors = Vec::with_capacity(sqrt_num.div_ceil(2));
-
-//     for i in 1..=sqrt_num {
-//         if num % i == 0 {
-//             if n == 0 {
-//                 return Some(i);
-//             }
-//             n -= 1;
-//             if i != num / i {
-//                 end_factors.push(num / i);
-//             }
-//         }
-//     }
-
-//     if n >= end_factors.len() {
-//         None
-//     } else {
-//         end_factors.get(end_factors.len() - n - 1).copied()
-//     }
-// }
-
-// #[cfg(test)]
-// mod tests {
-//     use crate::common::find_nth_factor;
-
-//     #[test]
-//     fn find_first_factor() {
-//         assert_eq!(find_nth_factor(432156, 0), Some(1));
-//     }
-
-//     #[test]
-//     fn find_factor_of_prime() {
-//         assert_eq!(find_nth_factor(17, 2), None);
-//         assert_eq!(find_nth_factor(17, 0), Some(1));
-//         assert_eq!(find_nth_factor(17, 1), Some(17));
-//     }
-
-//     #[test]
-//     fn find_factor01() {
-//         assert_eq!(find_nth_factor(256, 6), Some(64));
-//     }
-// }
