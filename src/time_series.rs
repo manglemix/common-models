@@ -7,7 +7,7 @@ use burn::{
         gru::{Gru, GruConfig},
         Dropout, DropoutConfig, LayerNorm, LayerNormConfig, Linear, LinearConfig,
     },
-    tensor::{backend::Backend, Tensor}
+    tensor::{backend::Backend, Tensor},
 };
 
 use super::{Activation, ThreeTuple};
@@ -130,7 +130,6 @@ impl<B: Backend> GruNetwork<B> {
         }
     }
 }
-
 
 impl GruNetworkConfig {
     /// Returns the initialized model.

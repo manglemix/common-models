@@ -1,7 +1,4 @@
-use std::{
-    fmt::Debug,
-    marker::PhantomData,
-};
+use std::{fmt::Debug, marker::PhantomData};
 
 use burn::{
     module::{AutodiffModule, Module},
